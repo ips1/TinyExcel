@@ -16,7 +16,8 @@ CellReference coords_to_reference(std::string coords)
 }
 
 
-// Creates
+// Creates postfix expression from infix string representation
+// If string doesn't represent infix expression, throws InvalidInfixException
 PostfixExpression parse_infix(std::string infix, const Table &parent_table, std::vector<CellReference> &dependencies)
 {
     PostfixExpression expr;
