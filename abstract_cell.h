@@ -1,8 +1,8 @@
 #pragma once
 
+// Unused piece of code!
 
-
-
+/*
 class Cell
 {
 private:
@@ -18,3 +18,4 @@ public:
     virtual double evaluate(std::vector<CellReference> &current_stack) = 0;
     virtual std::vector<CellReference> get_dependencies() = 0;
 };
+*/
