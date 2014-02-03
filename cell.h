@@ -3,8 +3,8 @@
 #include <memory>
 #include <sstream>
 
-#include "postfix.h"
 #include "table.h"
+#include "postfix.h"
 #include "cell_reference.h"
 //#include "abstract_cell.h"
 
@@ -13,17 +13,22 @@ class Table;
 class Cell
 {
 private:
-    bool is_dirty;
+    bool dirty;
     bool error;
-    double cache;
+    double value;
     PostfixExpression expr;
     std::vector<CellReference> dependencies;
     std::string original_text;
     std::string error_message;
 
 public:
+    bool is_dirty()
+    {
+        return dirty;
+    }
     Cell(const std::string& text, const Table& parent_table);
-    double evaluate(std::vector<CellReference> &current_stack);
+    void evaluate();
+    const double get_value();
     std::vector<CellReference> get_dependencies()
     {
         return dependencies;

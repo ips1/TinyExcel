@@ -1,9 +1,39 @@
 #include "table.h"
 #include <iostream>
 
+Cell &Table::get_cell(const CellReference &t) const
+{
+
+}
+
 void Reference::evaluate(PostfixStack& current_stack)
 {
-//    current_stack.push(target.getValue());
+    //    current_stack.push(target.getValue());
+    double val;
+    Cell &c = parent_table.get_cell(target);
+    if (c.is_dirty())
+    {
+        throw EvaluationException();
+    }
+    else
+    {
+        val = c.get_value();
+    }
+    current_stack.push(val);
+}
+
+double Table::evaluate_cell(const CellReference &t)
+{
+    Cell &c = get_cell(t);
+    std::vector<CellReference> stack;
+    try
+    {
+        c.evaluate();
+    }
+    catch (CycleException &ex)
+    {
+
+    }
 }
 
 
@@ -50,14 +80,15 @@ PostfixExpression parse_infix(std::string infix, const Table &parent_table, std:
                 while (!opstack.empty())
                 {
                     c = opstack.top();
-                    opstack.pop();
                     if (c == '(') break;
+                    opstack.pop();
                     expr.add_element(create_operator(c));
                 }
                 if (opstack.empty())
                 {
                     throw InvalidInfixException();
                 }
+                opstack.pop();
             }
             else if (((*it) == "*") || ((*it) == "/"))
             {

@@ -3,7 +3,7 @@
 
 Cell::Cell(const std::string &text, const Table &parent_table): original_text(text)
 {
-    is_dirty = true;
+    dirty = true;
 
     if (text.length() < 1)
     {
@@ -50,7 +50,16 @@ Cell::Cell(const std::string &text, const Table &parent_table): original_text(te
 }
 
 
-double Cell::evaluate(std::vector<CellReference> &current_stack)
+void Cell::evaluate()
+{
+    // Assume that all dependencies have been properly evaluated
+    // otherwise throws and exception
+    double res = expr.evaluate();
+    dirty = false;
+    value = res;
+}
+
+const double Cell::get_value()
 {
 
 }

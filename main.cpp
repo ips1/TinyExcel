@@ -36,10 +36,18 @@ int main()
 
     std::vector<CellReference> dependencies;
     Table t;
-    PostfixExpression expr2 = parse_infix("5+(3   * 8 -9) / 125 * 8 + (35) - (35 * 65 + (42 - 8))", t, dependencies);
+    //PostfixExpression expr2 = parse_infix("5+(3   * 8 -9) / 125 * 8 + (35) - (35 * 65 + (42 - 8))", t, dependencies);
+    PostfixExpression expr2 = parse_infix("(6*1 + 6*1 + 6*1 + 2*1 + 5*1 + 3*1 + 6*1 + 6*3) / 40", t, dependencies);
     std::cout << expr2.evaluate() << std::endl;
 
 
 
     return 0;
+
+
+
+
+
+
+
 }

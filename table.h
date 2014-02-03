@@ -5,9 +5,14 @@
 #include "cell_reference.h"
 #include "parsing.h"
 
+class Cell;
+
 class Table
 {
 
+public:
+    Cell &get_cell(const CellReference &t) const;
+    double evaluate_cell(const CellReference &t);
 };
 
 class Reference: public PostfixAtom
