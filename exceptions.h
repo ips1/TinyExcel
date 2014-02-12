@@ -42,3 +42,7 @@ class EvaluationException: public virtual std::exception
 
 };
 
+class CellNotSetException: public virtual std::exception
+{
+
+};

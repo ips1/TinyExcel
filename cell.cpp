@@ -1,7 +1,7 @@
-#include "cell.h"
+#include "table.h"
 
 
-Cell::Cell(const std::string &text, const Table &parent_table): original_text(text)
+Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
 {
     dirty = true;
 
@@ -60,8 +60,8 @@ void Cell::evaluate()
     value = res;
 }
 
-const double Cell::get_value()
+double Cell::get_value() const
 {
-
+    return value;
 }
 

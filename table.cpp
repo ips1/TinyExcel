@@ -1,13 +1,24 @@
 #include "table.h"
 
-void Table::set_cell(int x, int y, std::string content)
+void Table::set_cell(const CellReference &t, std::string content)
 {
-    data[x][y] = Cell(content, *this);
+    auto res = data[t.x].insert(std::pair<int, Cell>(t.y, Cell(content, *this)));
+    if (res.second == false)
+    {
+        res.first->second = Cell(content, *this);
+    }
 }
 
-Cell &Table::get_cell(const CellReference &t) const
+Cell &Table::get_cell(const CellReference &t)
 {
-    return data[t.x][t.y];
+    try
+    {
+        return data.at(t.x).at(t.y);
+    }
+    catch (std::out_of_range &ex)
+    {
+        return empty_cell;
+    }
 }
 
 // Evaluates a cell and gets returns its value
@@ -103,7 +114,7 @@ CellReference coords_to_reference(std::string coords)
 
 // Creates postfix expression from infix string representation
 // If string doesn't represent infix expression, throws InvalidInfixException
-PostfixExpression parse_infix(std::string infix, const Table &parent_table, std::vector<CellReference> &dependencies)
+PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vector<CellReference> &dependencies)
 {
     PostfixExpression expr;
     std::stack<char> opstack;
@@ -218,7 +229,7 @@ PostfixExpression parse_infix(std::string infix, const Table &parent_table, std:
 
 
 
-PostfixElement create_reference(CellReference ref, const Table &parent_table)
+PostfixElement create_reference(CellReference ref, Table &parent_table)
 {
     return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Reference(ref, parent_table))));
 }
