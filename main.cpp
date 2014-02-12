@@ -40,6 +40,10 @@ int main()
     PostfixExpression expr2 = parse_infix("(6*1 + 6*1 + 6*1 + 2*1 + 5*1 + 3*1 + 6*1 + 6*3) / 40", t, dependencies);
     std::cout << expr2.evaluate() << std::endl;
 
+    Cell c("= (BC12+ A15*3) / (40 + C128)", t);
+    Cell d("= AHX8X + 115automobil - 25A + A3", t);
+    std::cout << d.get_error() << std::endl;
+    std::cout << "Done" << std::endl;
 
 
     return 0;

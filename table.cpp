@@ -58,12 +58,41 @@ double Table::evaluate_cell(const CellReference &t)
     return c.get_value();
 }
 
-
+// Parses reference to a cell from string coordinates
+// Coordinates are in form of ABC123 where letters are columns and numbers rows
 CellReference coords_to_reference(std::string coords)
 {
     CellReference ref;
-    ref.x = 0;
-    ref.y = 0;
+    char c = 0;
+    int n = 0;
+    int m = 0;
+    const int letterRange = 'Z' - 'A' + 1;
+    int i = 0;
+    c = coords[i];
+    while ((c >= 'A') && (c <= 'Z') && (i < coords.length()))
+    {
+
+        n *= letterRange;
+        n += c - 'A' + 1;
+        i++;
+        if (i < coords.length()) c = coords[i];
+
+    }
+    if (n == 0) throw InvalidCoordinatesException();
+    if (i == coords.length()) throw InvalidCoordinatesException();
+    while ((c >= '0') && (c <= '9') && (i < coords.length()))
+    {
+        m *= 10;
+        m += c - '0';
+        i++;
+        if (i < coords.length())
+            c = coords[i];
+    }
+    if (i != coords.length()) throw InvalidCoordinatesException();
+    // TODO: DELETE THIS
+    std::cout << "X: " << m << ", Y: " << n << std::endl;
+    ref.y = n;
+    ref.x = m;
     return ref;
 }
 
@@ -134,9 +163,17 @@ PostfixExpression parse_infix(std::string infix, const Table &parent_table, std:
                 }
                 opstack.push((*it)[0]);
             }
-            else if ((*it)[0] > 'A' && (*it)[0] < 'Z')
+            else if ((*it)[0] >= 'A' && (*it)[0] <= 'Z')
             {
-                CellReference ref = coords_to_reference(*it);
+                CellReference ref;
+                try
+                {
+                    ref = coords_to_reference(*it);
+                }
+                catch (InvalidCoordinatesException &ex)
+                {
+                    throw InvalidInfixException();
+                }
                 dependencies.push_back(ref);
                 expr.add_element(create_reference(ref, parent_table));
             }
@@ -147,6 +184,7 @@ PostfixExpression parse_infix(std::string infix, const Table &parent_table, std:
                 // Number parsing failed
                 if (!(s >> d))
                 {
+                    std::cout << (*it) << std::endl;
                     throw InvalidInfixException();
                 }
                 expr.add_element(create_value(d));
@@ -183,7 +221,7 @@ PostfixElement create_reference(CellReference ref, const Table &parent_table)
 
 // -- Reference : PostfixElement --
 // Overriding evaluate method
-virtual void Reference::evaluate(PostfixStack& current_stack)
+ void Reference::evaluate(PostfixStack& current_stack)
 {
     double val;
     Cell &c = parent_table.get_cell(target);

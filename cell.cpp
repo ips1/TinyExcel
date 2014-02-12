@@ -35,7 +35,8 @@ Cell::Cell(const std::string &text, const Table &parent_table): original_text(te
     {
         try
         {
-            expr = parse_infix(text, parent_table, dependencies);
+            std::string new_text = text.substr(1, text.length() - 1);
+            expr = parse_infix(new_text, parent_table, dependencies);
             error = false;
             return;
         }

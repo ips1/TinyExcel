@@ -17,6 +17,11 @@ class InvalidCellContentException: public virtual std::exception
 
 };
 
+class InvalidCoordinatesException: public virtual std::exception
+{
+
+};
+
 class InvalidInfixException: public virtual std::exception
 {
 

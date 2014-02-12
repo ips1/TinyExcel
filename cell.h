@@ -39,6 +39,10 @@ public:
     {
         on_stack = false;
     }
+    const std::string &get_error()
+    {
+        return error_message;
+    }
     Cell(const std::string& text, const Table& parent_table);
     void evaluate();
     const double get_value();
