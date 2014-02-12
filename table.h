@@ -1,5 +1,8 @@
 #pragma once
+#include <iostream>
+#include <string>
 #include <stack>
+#include <map>
 #include "cell.h"
 #include "postfix.h"
 #include "cell_reference.h"
@@ -9,8 +12,11 @@ class Cell;
 
 class Table
 {
+private:
+    std::map<int, std::map<int, Cell>> data;
 
 public:
+    void set_cell(int x, int y, std::string content);
     Cell &get_cell(const CellReference &t) const;
     double evaluate_cell(const CellReference &t);
 };

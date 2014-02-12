@@ -1,9 +1,13 @@
 #include "table.h"
-#include <iostream>
+
+void Table::set_cell(int x, int y, std::string content)
+{
+    data[x][y] = Cell(content, *this);
+}
 
 Cell &Table::get_cell(const CellReference &t) const
 {
-
+    return data[t.x][t.y];
 }
 
 // Evaluates a cell and gets returns its value
