@@ -6,34 +6,56 @@ Cell &Table::get_cell(const CellReference &t) const
 
 }
 
-void Reference::evaluate(PostfixStack& current_stack)
-{
-    //    current_stack.push(target.getValue());
-    double val;
-    Cell &c = parent_table.get_cell(target);
-    if (c.is_dirty())
-    {
-        throw EvaluationException();
-    }
-    else
-    {
-        val = c.get_value();
-    }
-    current_stack.push(val);
-}
-
+// Evaluates a cell and gets returns its value
+// Solves all dependencies along the way
 double Table::evaluate_cell(const CellReference &t)
 {
     Cell &c = get_cell(t);
-    std::vector<CellReference> stack;
+    // Cell is already evaluated
+    if (!c.is_dirty()) return c.get_value();
+    // Have to evaluate the cell
+    // - solving dependencies first
+    std::stack<CellReference> stack;
+    c.put_on_stack();
+    stack.push(t);
     try
     {
-        c.evaluate();
+        while (!stack.empty())
+        {
+            CellReference current = stack.top();
+            Cell &cur_cell = get_cell(current);
+            std::vector<CellReference> dependencies = cur_cell.get_dependencies();
+            bool ready = true;
+            // Iterate through dependencies
+            for (auto it = dependencies.begin(); it < dependencies.end(); it++)
+            {
+                Cell &next = get_cell(*it);
+                // Dependency is allready on stack - cycle detected
+                if (next.is_on_stack())
+                {
+                    // TODO - CYCLE DETECTED!!!
+                }
+                if (next.is_dirty())
+                {
+                    ready = false;
+                    next.put_on_stack();
+                    stack.push(*it);
+                }
+            }
+            if (ready == true)
+            {
+                stack.pop();
+                cur_cell.remove_from_stack();
+                cur_cell.evaluate();
+            }
+        }
     }
     catch (CycleException &ex)
     {
 
     }
+
+    return c.get_value();
 }
 
 
@@ -159,3 +181,20 @@ PostfixElement create_reference(CellReference ref, const Table &parent_table)
     return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Reference(ref, parent_table))));
 }
 
+// -- Reference : PostfixElement --
+// Overriding evaluate method
+virtual void Reference::evaluate(PostfixStack& current_stack)
+{
+    double val;
+    Cell &c = parent_table.get_cell(target);
+    // All dependencies have to be solved in advance
+    if (c.is_dirty())
+    {
+        throw EvaluationException();
+    }
+    else
+    {
+        val = c.get_value();
+    }
+    current_stack.push(val);
+}

@@ -15,6 +15,7 @@ class Cell
 private:
     bool dirty;
     bool error;
+    bool on_stack;
     double value;
     PostfixExpression expr;
     std::vector<CellReference> dependencies;
@@ -26,10 +27,22 @@ public:
     {
         return dirty;
     }
+    bool is_on_stack()
+    {
+        return on_stack;
+    }
+    bool put_on_stack()
+    {
+        on_stack = true;
+    }
+    bool remove_from_stack()
+    {
+        on_stack = false;
+    }
     Cell(const std::string& text, const Table& parent_table);
     void evaluate();
     const double get_value();
-    std::vector<CellReference> get_dependencies()
+    std::vector<CellReference> &get_dependencies()
     {
         return dependencies;
     }
