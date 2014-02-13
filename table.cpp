@@ -1,9 +1,13 @@
+#include <string>
+#include <map>
+#include <sstream>
+
 #include "table.h"
 
 void Table::set_cell(const CellReference &t, std::string content)
 {
     auto res = data[t.x].insert(std::pair<int, Cell>(t.y, Cell(content, *this)));
-    if (res.second == false)
+    if (!res.second)
     {
         res.first->second = Cell(content, *this);
     }
@@ -57,7 +61,7 @@ double Table::evaluate_cell(const CellReference &t)
                     stack.push(*it);
                 }
             }
-            if (ready == true)
+            if (ready)
             {
                 stack.pop();
                 cur_cell.remove_from_stack();

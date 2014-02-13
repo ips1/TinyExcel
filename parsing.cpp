@@ -1,10 +1,11 @@
+#include <vector>
+
 #include "parsing.h"
 
 // Splits the string using specified delimiters
 // if include_delims is true, delimiters are also included as strings
 std::vector<std::string> split_string(std::string str, std::vector<char> delims, bool include_delims)
 {
-//    static const char delims[6] = {'+', '-', '*', '/', '(', ')'};
     std::vector<std::string> result;
 
     unsigned minpos = str.length();

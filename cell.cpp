@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "table.h"
 
 
@@ -63,5 +65,28 @@ void Cell::evaluate()
 double Cell::get_value() const
 {
     return value;
+}
+
+void Cell::reset()
+{
+    error = false;
+    error_message = "";
+    dirty = true;
+    value = 0;
+}
+
+std::string Cell::get_content() const
+{
+    if (error)
+    {
+        return error_message;
+    }
+    if (dirty)
+    {
+        return "Not evaluated";
+    }
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
 }
 
