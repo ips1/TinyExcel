@@ -3,18 +3,17 @@
 #include <fstream>
 #include <iostream>
 
-#include "table_loader.h"
 #include "table.h"
 #include "parsing.h"
 #include "exceptions.h"
 
-Table load_table(std::string fname)
+void Table::load(std::string fname)
 {
     const std::vector<char> delim = {';'};
     std::ifstream in(fname);
     if (in.fail()) throw FileOpenException();
 
-    Table t;
+    data.clear();
 
     int k = 0;
 
@@ -32,19 +31,16 @@ Table load_table(std::string fname)
             // Dont put empty cells
             if (*it == "") continue;
             std::cout << "PART " << k << ", " << l <<": " << *it << std::endl;
-            t.set_cell(CellReference(k, l), *it);
+            set_cell(CellReference(k, l), *it);
         }
     }
-
-    return t;
 }
 
 
-void save_table(Table &t, std::string fname, bool original_text)
+void Table::save(std::string fname, bool original_text)
 {
 
     const char delim = ';';
-    const auto &data = t.get_data();
     std::ofstream out(fname);
     if (out.fail()) throw FileOpenException();
     int k = 1;
@@ -75,3 +71,4 @@ void save_table(Table &t, std::string fname, bool original_text)
     }
 
 }
+

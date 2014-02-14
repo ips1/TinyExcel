@@ -42,11 +42,11 @@ public:
     {
         return on_stack;
     }
-    bool put_on_stack()
+    void put_on_stack()
     {
         on_stack = true;
     }
-    bool remove_from_stack()
+    void remove_from_stack()
     {
         on_stack = false;
     }
@@ -82,19 +82,40 @@ private:
     Cell empty_cell;
 
 public:
-    void set_cell(const CellReference &t, std::string content);
-    Cell &get_cell(const CellReference &t);
-    void evaluate();
-    void reset();
-    double evaluate_cell(const CellReference &t);
-    const std::map<int, std::map<int, Cell>> &get_data()
-    {
-        return data;
-    }
+    // Copy ctors and assignment operators deleted because of references inside the tables
+    // copying would not work with them
+    Table(const Table&) = delete;
+    Table(Table&&) = delete;
+    Table& operator=(const Table&) = delete;
+    Table& operator=(Table&&) = delete;
+
+    // Constructor
     Table() : empty_cell("0", *this)
     {
         empty_cell.evaluate();
     }
+
+    // Methods for loading and saving the table, implemented in table_load.cpp
+    void load(std::string fname);
+    void save(std::string fname, bool original_text);
+
+    // Methods for cell manipulation
+    void set_cell(const CellReference &t, std::string content);
+    Cell &get_cell(const CellReference &t);
+
+    // Methods for table evaluation and reseting to original state
+    void evaluate();
+    void reset();
+
+    // Method for evaluating specific cell
+    double evaluate_cell(const CellReference &t);
+
+    /*
+    const std::map<int, std::map<int, Cell>> &get_data()
+    {
+        return data;
+    }
+    */
 };
 
 class Reference: public PostfixAtom

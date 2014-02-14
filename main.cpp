@@ -1,7 +1,6 @@
 #include <iostream>
 #include <memory>
 
-#include "table_loader.h"
 #include "table.h"
 #include "postfix.h"
 #include "parsing.h"
@@ -23,7 +22,7 @@ int non_interactive(std::string inf, std::string outf)
     Table t;
     try
     {
-        t = load_table(inf);
+        t.load(inf);
     }
     catch (FileOpenException &ex)
     {
@@ -41,7 +40,7 @@ int non_interactive(std::string inf, std::string outf)
     }
     try
     {
-        save_table(t, outf, false);
+        t.save(outf, false);
     }
     catch (FileOpenException &ex)
     {
@@ -78,13 +77,17 @@ int main(int argc, char **argv)
 
     return res;
 
+
     // TODO: FileOpenException
-    Table t = load_table("in.txt");
-    t.evaluate_cell(CellReference(1,1));
-    std::cout << std::endl << t.get_cell(CellReference(1,1)).get_content() << std::endl << std::endl;
+    Table t;
+    t.load("in.txt");
+    //t.evaluate_cell(CellReference(2,1));
+    t.evaluate();
+    //std::cout << std::endl << t.get_cell(CellReference(2,1)).get_content() << std::endl << std::endl;
 
-    save_table(t, "out1.txt", false);
+    t.save("out1.txt", false);
 
+    return 0;
 /*
     t.set_cell(CellReference(1,1),"5");
     t.set_cell(CellReference(2,1),"1");
@@ -126,7 +129,7 @@ int main(int argc, char **argv)
     std::cout << t.get_cell(CellReference(9,9)).get_content() << std::endl;
     std::cout << t.get_cell(CellReference(80,159)).get_content() << std::endl;
 
-    save_table(t, "out2.txt", true);
+    t.save("out2.txt", true);
 
     return 0;
 
