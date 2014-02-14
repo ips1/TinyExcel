@@ -51,3 +51,8 @@ class CellNotSetException: public virtual std::exception
 {
 
 };
+
+class FileOpenException: public virtual std::exception
+{
+
+};
