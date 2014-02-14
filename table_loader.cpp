@@ -48,7 +48,7 @@ void save_table(Table &t, std::string fname, bool original_text)
     const char delim = ';';
     const auto &data = t.get_data();
     std::ofstream out(fname);
-    if (in.fail()) throw FileOpenException();
+    if (out.fail()) throw FileOpenException();
     int k = 1;
     for (auto ita = data.begin(); ita != data.end(); ita++)
     {
