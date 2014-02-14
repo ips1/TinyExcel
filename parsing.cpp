@@ -4,7 +4,7 @@
 
 // Splits the string using specified delimiters
 // if include_delims is true, delimiters are also included as strings
-std::vector<std::string> split_string(std::string str, std::vector<char> delims, bool include_delims)
+std::vector<std::string> split_string(std::string str, std::vector<char> delims, bool include_delims, bool keep_empty)
 {
     std::vector<std::string> result;
 
@@ -21,7 +21,7 @@ std::vector<std::string> split_string(std::string str, std::vector<char> delims,
     while (minpos < str.length())
     {
         std::string sub = str.substr(0, minpos);
-        if (sub.length() > 0)
+        if (keep_empty || (sub.length() > 0))
         {
             result.push_back(sub);
         }

@@ -6,7 +6,7 @@
 
 void Table::set_cell(const CellReference &t, std::string content)
 {
-    auto res = data[t.x].insert(std::pair<int, Cell>(t.y, Cell(content, *this)));
+    auto res = data[t.get_x()].insert(std::pair<int, Cell>(t.get_y(), Cell(content, *this)));
     if (!res.second)
     {
         res.first->second = Cell(content, *this);
@@ -17,11 +17,35 @@ Cell &Table::get_cell(const CellReference &t)
 {
     try
     {
-        return data.at(t.x).at(t.y);
+        return data.at(t.get_x()).at(t.get_y());
     }
     catch (std::out_of_range &ex)
     {
         return empty_cell;
+    }
+}
+
+// Resets all cells to their default (unevaluated) state
+void Table::reset()
+{
+    for (auto ita = data.begin(); ita != data.end(); ita++)
+    {
+        for (auto itb = (ita->second).begin(); itb != (ita->second).end(); itb++)
+        {
+            (itb->second).reset();
+        }
+    }
+}
+
+// Evaluates entire table
+void Table::evaluate()
+{
+    for (auto ita = data.begin(); ita != data.end(); ita++)
+    {
+        for (auto itb = (ita->second).begin(); itb != (ita->second).end(); itb++)
+        {
+            evaluate_cell(CellReference(ita->first, itb->first));
+        }
     }
 }
 
@@ -52,13 +76,26 @@ double Table::evaluate_cell(const CellReference &t)
                 // Dependency is allready on stack - cycle detected
                 if (next.is_on_stack())
                 {
-                    // TODO - CYCLE DETECTED!!!
+                    next.put_on_cycle();
+                    // Stack unwinding
+                    /*
+                    CellReference last = stack.top();
+                    stack.pop();
+                    Cell &last_cell = get_cell(last);
+                    while ((last.get_x() != it->get_x()) && (last.get_y() != it ->get_y()))
+                    {
+                        last_cell.put_on_cycle();
+
+                        last = stack.top();
+                    }
+                    */
                 }
-                if (next.is_dirty())
+                else if (next.is_dirty())
                 {
                     ready = false;
                     next.put_on_stack();
                     stack.push(*it);
+                    break;
                 }
             }
             if (ready)
@@ -110,8 +147,9 @@ CellReference coords_to_reference(std::string coords)
     if (i != coords.length()) throw InvalidCoordinatesException();
     // TODO: DELETE THIS
     std::cout << "X: " << m << ", Y: " << n << std::endl;
-    ref.y = n;
-    ref.x = m;
+    ref.set_y(n);
+    ref.set_x(m);
+    //std::cout << "X: " << ref.get_x() << ", Y: " << ref.get_y() << std::endl;
     return ref;
 }
 
@@ -127,7 +165,7 @@ PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vecto
     std::vector<char> delims = {'+', '-', '*', '/', '(', ')'};
 
     // Split the expression into atomic parts
-    std::vector<std::string> parts = split_string(infix, delims, true);
+    std::vector<std::string> parts = split_string(infix, delims, true, false);
 
     try
     {

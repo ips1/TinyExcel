@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "table.h"
+#include "exceptions.h"
 
 
 Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
@@ -10,10 +11,8 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
 
     if (text.length() < 1)
     {
-        error_message = "Empty cell";
+        error = false;
         dirty = false;
-        error = true;
-        evaluable = false;
         expr = pure_value(0);
         return;
     }
@@ -66,6 +65,7 @@ void Cell::evaluate()
     // otherwise throws EvaluationException
 
     if (!evaluable) return;
+    if (!dirty) return;
 
     value = 0;
     error = false;
@@ -115,6 +115,15 @@ void Cell::reset()
     value = 0;
 }
 
+void Cell::put_on_cycle()
+{
+    if (!evaluable) return;
+    error = true;
+    error_message = CYCERR;
+    dirty = false;
+    value = 0;
+}
+
 std::string Cell::get_content() const
 {
     if (error)
@@ -128,5 +137,10 @@ std::string Cell::get_content() const
     std::stringstream ss;
     ss << value;
     return ss.str();
+}
+
+const std::string &Cell::get_text() const
+{
+    return original_text;
 }
 

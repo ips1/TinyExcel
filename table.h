@@ -13,9 +13,10 @@
 #include "parsing.h"
 
 // Error messages:
-#define EVALERR "Evaluation error"
-#define DIVERR "Divide by zero error"
-#define DEPERR "Dependency error"
+const std::string EVALERR = "Evaluation error";
+const std::string DIVERR = "Divide by zero error";
+const std::string DEPERR = "Dependency error";
+const std::string CYCERR = "Cycle error";
 
 class Table;
 
@@ -60,12 +61,14 @@ public:
     Cell(const std::string& text, Table& parent_table);
     void evaluate();
     void reset();
+    void put_on_cycle();
     double get_value() const;
     const std::vector<CellReference> &get_dependencies() const
     {
         return dependencies;
     }
     std::string get_content() const;
+    const std::string &get_text() const;
 };
 
 
@@ -81,8 +84,13 @@ private:
 public:
     void set_cell(const CellReference &t, std::string content);
     Cell &get_cell(const CellReference &t);
+    void evaluate();
+    void reset();
     double evaluate_cell(const CellReference &t);
-
+    const std::map<int, std::map<int, Cell>> &get_data()
+    {
+        return data;
+    }
     Table() : empty_cell("0", *this)
     {
         empty_cell.evaluate();
