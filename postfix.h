@@ -48,6 +48,18 @@ public:
     virtual void evaluate(PostfixStack&);
 };
 
+class UnaryOperator: public PostfixAtom
+{
+public:
+    virtual void evaluate(PostfixStack&) = 0;
+};
+
+class Negation: public PostfixAtom
+{
+public:
+    virtual void evaluate(PostfixStack&);
+};
+
 class BinaryOperator: public PostfixAtom
 {
 public:

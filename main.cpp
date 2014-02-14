@@ -53,6 +53,7 @@ int non_interactive(std::string inf, std::string outf)
 
 int main(int argc, char **argv)
 {
+    /*
     // Parsing command line arguments
     std::vector<std::string> args(argv, argv + argc);
 
@@ -76,6 +77,16 @@ int main(int argc, char **argv)
     }
 
     return res;
+    */
+
+    Table tt;
+    tt.set_cell(CellReference(1,1),"=5+25*(~186)/0.5");
+    tt.evaluate();
+    std::cout << tt.get_cell(CellReference(1,1)).get_content() << std::endl;
+
+
+    return 0;
+
 
 
     // TODO: FileOpenException

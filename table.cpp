@@ -162,7 +162,7 @@ PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vecto
     std::stack<char> opstack;
 
     // Delimiters of infix expression
-    std::vector<char> delims = {'+', '-', '*', '/', '(', ')'};
+    std::vector<char> delims = {'+', '-', '*', '/', '~', '(', ')'};
 
     // Split the expression into atomic parts
     std::vector<std::string> parts = split_string(infix, delims, true, false);
@@ -198,12 +198,23 @@ PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vecto
                 }
                 opstack.pop();
             }
+            else if ((*it) == "~")
+            {
+                while (!opstack.empty())
+                {
+                    c = opstack.top();
+                    if (c != '~') break;
+                    opstack.pop();
+                    expr.add_element(create_operator(c));
+                }
+                opstack.push((*it)[0]);
+            }
             else if (((*it) == "*") || ((*it) == "/"))
             {
                 while (!opstack.empty())
                 {
                     c = opstack.top();
-                    if ((c != '*') && (c != '/')) break;
+                    if ((c != '*') && (c != '/') && (c != '~')) break;
                     opstack.pop();
                     expr.add_element(create_operator(c));
                 }

@@ -11,6 +11,13 @@ void Value::evaluate(PostfixStack& current_stack)
     current_stack.push(this->val);
 }
 
+void Negation::evaluate(PostfixStack& current_stack)
+{
+    double num = current_stack.pop();
+
+    current_stack.push(-num);
+}
+
 void Addition::evaluate(PostfixStack& current_stack)
 {
     double first = current_stack.pop();
@@ -82,6 +89,8 @@ PostfixElement create_operator(char c)
         case '-': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Subtraction)));
         case '*': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Multiplication)));
         case '/': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Division)));
+        case '~': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Negation)));
+
         default: throw InvalidOperatorException();
     }
 }
