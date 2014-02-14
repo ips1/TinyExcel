@@ -6,11 +6,14 @@
 Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
 {
     dirty = true;
+    evaluable = true;
 
     if (text.length() < 1)
     {
         error_message = "Empty cell";
+        dirty = false;
         error = true;
+        evaluable = false;
         expr = pure_value(0);
         return;
     }
@@ -24,7 +27,9 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
         if (!(s >> d))
         {
             error_message = "Invalid number";
+            dirty = false;
             error = true;
+            evaluable = false;
             expr = pure_value(0);
             return;
         }
@@ -45,7 +50,9 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
         catch (InvalidInfixException &e)
         {
             error_message = "Invalid expression";
+            dirty = false;
             error = true;
+            evaluable = false;
             expr = pure_value(0);
             return;
         }
@@ -56,10 +63,41 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
 void Cell::evaluate()
 {
     // Assume that all dependencies have been properly evaluated
-    // otherwise throws and exception
-    double res = expr.evaluate();
+    // otherwise throws EvaluationException
+
+    if (!evaluable) return;
+
+    value = 0;
+    error = false;
+    error_message = "";
+
+    try
+    {
+        double res = expr.evaluate();
+        value = res;
+    }
+    catch (InvalidOperatorException &ex)
+    {
+        error = true;
+        error_message = EVALERR;
+    }
+    catch (InvalidPostfixException &ex)
+    {
+        error = true;
+        error_message = EVALERR;
+    }
+    catch (DivideByZeroException &ex)
+    {
+        error = true;
+        error_message = DIVERR;
+    }
+    catch (DependencyException &ex)
+    {
+        error = true;
+        error_message = DEPERR;
+    }
+
     dirty = false;
-    value = res;
 }
 
 double Cell::get_value() const
@@ -69,6 +107,8 @@ double Cell::get_value() const
 
 void Cell::reset()
 {
+    if (!evaluable) return;
+
     error = false;
     error_message = "";
     dirty = true;

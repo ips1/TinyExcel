@@ -249,6 +249,10 @@ PostfixElement create_reference(CellReference ref, Table &parent_table)
     {
         throw EvaluationException();
     }
+    else if (c.has_error())
+    {
+        throw DependencyException();
+    }
     else
     {
         val = c.get_value();

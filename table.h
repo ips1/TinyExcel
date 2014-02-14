@@ -12,11 +12,17 @@
 #include "cell_reference.h"
 #include "parsing.h"
 
+// Error messages:
+#define EVALERR "Evaluation error"
+#define DIVERR "Divide by zero error"
+#define DEPERR "Dependency error"
+
 class Table;
 
 class Cell
 {
 private:
+    bool evaluable;
     bool dirty;
     bool error;
     bool on_stack;
@@ -42,6 +48,10 @@ public:
     bool remove_from_stack()
     {
         on_stack = false;
+    }
+    bool has_error() const
+    {
+        return error;
     }
     const std::string &get_error() const
     {

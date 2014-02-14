@@ -37,6 +37,11 @@ class CycleException: public virtual std::exception
 
 };
 
+class DependencyException: public virtual std::exception
+{
+
+};
+
 class EvaluationException: public virtual std::exception
 {
 
