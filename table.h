@@ -7,6 +7,8 @@
 #include <sstream>
 #include <exception>
 #include <stdexcept>
+#include <ostream>
+#include <iostream>
 
 #include "postfix.h"
 #include "cell_reference.h"
@@ -17,6 +19,8 @@ const std::string EVALERR = "Evaluation error";
 const std::string DIVERR = "Divide by zero error";
 const std::string DEPERR = "Dependency error";
 const std::string CYCERR = "Cycle error";
+const std::string NUMERR = "Invalid number";
+const std::string EXPRERR = "Invalid expression";
 
 class Table;
 
@@ -92,6 +96,7 @@ public:
     // Constructor
     Table() : empty_cell("0", *this)
     {
+        std::cout << "In CTOR" << std::endl;
         empty_cell.evaluate();
     }
 
@@ -99,8 +104,10 @@ public:
     void load(std::string fname);
     void save(std::string fname, bool original_text);
 
+    void print(std::ostream &out);
+
     // Methods for cell manipulation
-    void set_cell(const CellReference &t, std::string content);
+    void set_cell(const CellReference &t, const std::string &content);
     Cell &get_cell(const CellReference &t);
 
     // Methods for table evaluation and reseting to original state
@@ -129,8 +136,8 @@ public:
     virtual void evaluate(PostfixStack&);
 };
 
-CellReference coords_to_reference(std::string coords);
+CellReference coords_to_reference(const std::string &coords);
 
-PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vector<CellReference> &dependencies);
+PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std::vector<CellReference> &dependencies);
 
-PostfixElement create_reference(CellReference ref, Table &parent_table);
+PostfixElement create_reference(CellReference r, Table &parent_table);

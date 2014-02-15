@@ -56,3 +56,13 @@ class FileOpenException: public virtual std::exception
 {
 
 };
+
+class InvalidCommandException: public virtual std::exception
+{
+
+};
+
+class NotEnoughArgumentsException: public virtual std::exception
+{
+
+};

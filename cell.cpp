@@ -3,11 +3,12 @@
 #include "table.h"
 #include "exceptions.h"
 
-
+// Cell constructor, parses string specifiing the cell content
 Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
 {
     dirty = true;
     evaluable = true;
+    on_stack = false;
 
     if (text.length() < 1)
     {
@@ -25,7 +26,7 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
         // Number parsing failed
         if (!(s >> d))
         {
-            error_message = "Invalid number";
+            error_message = NUMERR;
             dirty = false;
             error = true;
             evaluable = false;
@@ -48,7 +49,7 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
         }
         catch (InvalidInfixException &e)
         {
-            error_message = "Invalid expression";
+            error_message = EXPRERR;
             dirty = false;
             error = true;
             evaluable = false;
@@ -58,7 +59,7 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
     }
 }
 
-
+// Evaluates a single cell (if it is dirty and evaluable)
 void Cell::evaluate()
 {
     // Assume that all dependencies have been properly evaluated
@@ -79,12 +80,12 @@ void Cell::evaluate()
     catch (InvalidOperatorException &ex)
     {
         error = true;
-        error_message = EVALERR;
+        error_message = EXPRERR;
     }
     catch (InvalidPostfixException &ex)
     {
         error = true;
-        error_message = EVALERR;
+        error_message = EXPRERR;
     }
     catch (DivideByZeroException &ex)
     {
@@ -100,21 +101,26 @@ void Cell::evaluate()
     dirty = false;
 }
 
+// Returns cell's value
 double Cell::get_value() const
 {
     return value;
 }
 
+// Resets the state of a cell
+// - clears its value (has to be evaluated again)
 void Cell::reset()
 {
     if (!evaluable) return;
 
+    on_stack = false;
     error = false;
     error_message = "";
     dirty = true;
     value = 0;
 }
 
+// Sets cell's on_cycle flag
 void Cell::put_on_cycle()
 {
     if (!evaluable) return;
@@ -124,6 +130,8 @@ void Cell::put_on_cycle()
     value = 0;
 }
 
+// Returns printable content of the cell
+// (value, error or "Not evaluated" string)
 std::string Cell::get_content() const
 {
     if (error)
@@ -139,6 +147,7 @@ std::string Cell::get_content() const
     return ss.str();
 }
 
+// Returns original text of the cell
 const std::string &Cell::get_text() const
 {
     return original_text;

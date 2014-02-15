@@ -3,7 +3,7 @@
 class CellReference
 {
 private:
-    int x, y;
+    unsigned x, y;
 public:
     CellReference(int nx, int ny)
     {

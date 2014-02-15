@@ -6,9 +6,9 @@
 #include <vector>
 #include "exceptions.h"
 
-//Cell parse_cell(const std::string &str);
+std::vector<std::string> split_string(const std::string &str, const std::vector<char> &delims, bool include_delims, bool keep_empty);
 
-std::vector<std::string> split_string(std::string str, std::vector<char> delims, bool include_delims, bool keep_empty);
+std::string merge_string(const std::vector<std::string> &parts, const std::string &delim);
 
 void trim(std::string &str, char c);
 

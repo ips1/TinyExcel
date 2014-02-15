@@ -4,7 +4,7 @@
 
 #include "table.h"
 
-void Table::set_cell(const CellReference &t, std::string content)
+void Table::set_cell(const CellReference &t, const std::string &content)
 {
     auto res = data[t.get_x()].insert(std::pair<int, Cell>(t.get_y(), Cell(content, *this)));
     if (!res.second)
@@ -56,6 +56,7 @@ double Table::evaluate_cell(const CellReference &t)
     Cell &c = get_cell(t);
     // Cell is already evaluated
     if (!c.is_dirty()) return c.get_value();
+    std::cout << "evaluating" << std::endl;
     // Have to evaluate the cell
     // - solving dependencies first
     std::stack<CellReference> stack;
@@ -66,6 +67,7 @@ double Table::evaluate_cell(const CellReference &t)
         while (!stack.empty())
         {
             CellReference current = stack.top();
+            std::cout << "From stack: " << current.get_x() << ", " << current.get_y() << std::endl;
             Cell &cur_cell = get_cell(current);
             std::vector<CellReference> dependencies = cur_cell.get_dependencies();
             bool ready = true;
@@ -114,21 +116,51 @@ double Table::evaluate_cell(const CellReference &t)
     return c.get_value();
 }
 
+// Prints the table content
+void Table::print(std::ostream &out)
+{
+    int k, l;
+    for (auto ita = data.begin(); ita != data.end(); ita++)
+    {
+        k = ita->first;
+        out << "-- " << k << " --" << std::endl;
+        for (auto itb = (ita->second).begin(); itb != (ita->second).end(); itb++)
+        {
+            Cell &cell = itb->second;
+            l = itb->first;
+            int letter_count = 'Z' - 'A' + 1;
+            std::stringstream ss;
+            while (l > 0)
+            {
+                char c = 'A' + (l % letter_count) - 1;
+                l = l / letter_count;
+                ss << c;
+            }
+            ss << k;
+
+            out << "  " << ss.str() << ":" << std::endl;
+            out << "  - |" << cell.get_text() << "|" << std::endl;
+            out << "  - Value: " << cell.get_content() << std::endl;
+        }
+    }
+}
+
+
 // Parses reference to a cell from string coordinates
 // Coordinates are in form of ABC123 where letters are columns and numbers rows
-CellReference coords_to_reference(std::string coords)
+CellReference coords_to_reference(const std::string &coords)
 {
     CellReference ref;
     char c = 0;
     int n = 0;
     int m = 0;
-    const int letterRange = 'Z' - 'A' + 1;
-    int i = 0;
+    const int letter_count = 'Z' - 'A' + 1;
+    unsigned i = 0;
     c = coords[i];
     while ((c >= 'A') && (c <= 'Z') && (i < coords.length()))
     {
 
-        n *= letterRange;
+        n *= letter_count;
         n += c - 'A' + 1;
         i++;
         if (i < coords.length()) c = coords[i];
@@ -156,7 +188,7 @@ CellReference coords_to_reference(std::string coords)
 
 // Creates postfix expression from infix string representation
 // If string doesn't represent infix expression, throws InvalidInfixException
-PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vector<CellReference> &dependencies)
+PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std::vector<CellReference> &dependencies)
 {
     PostfixExpression expr;
     std::stack<char> opstack;
@@ -281,10 +313,9 @@ PostfixExpression parse_infix(std::string infix, Table &parent_table, std::vecto
 }
 
 
-
-PostfixElement create_reference(CellReference ref, Table &parent_table)
+PostfixElement create_reference(CellReference r, Table &parent_table)
 {
-    return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Reference(ref, parent_table))));
+    return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Reference(r, parent_table))));
 }
 
 // -- Reference : PostfixElement --
@@ -300,6 +331,8 @@ PostfixElement create_reference(CellReference ref, Table &parent_table)
     }
     else if (c.has_error())
     {
+        // TODO: DELETE THIS
+        std::cout << c.get_error() << std::endl;
         throw DependencyException();
     }
     else

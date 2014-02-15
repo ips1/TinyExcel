@@ -4,6 +4,7 @@
 #include "table.h"
 #include "postfix.h"
 #include "parsing.h"
+#include "interactive.h"
 
 // Prints usage of the program
 void usage(std::string fname)
@@ -53,7 +54,7 @@ int non_interactive(std::string inf, std::string outf)
 
 int main(int argc, char **argv)
 {
-    /*
+
     // Parsing command line arguments
     std::vector<std::string> args(argv, argv + argc);
 
@@ -63,7 +64,8 @@ int main(int argc, char **argv)
     // No arguments = interactive mode
     if (argc < 2)
     {
-        // Interactive stuff here
+        InteractiveContext con;
+        con.start_loop(std::cin);
     }
     // Argument
     else if (argc == 3)
@@ -77,8 +79,8 @@ int main(int argc, char **argv)
     }
 
     return res;
-    */
 
+/*
     Table tt;
     tt.set_cell(CellReference(1,1),"=5+25*(~186)/0.5");
     tt.evaluate();
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
 
     return 0;
 
-
+*/
 
     // TODO: FileOpenException
     Table t;
