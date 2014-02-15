@@ -56,7 +56,6 @@ double Table::evaluate_cell(const CellReference &t)
     Cell &c = get_cell(t);
     // Cell is already evaluated
     if (!c.is_dirty()) return c.get_value();
-    std::cout << "evaluating" << std::endl;
     // Have to evaluate the cell
     // - solving dependencies first
     std::stack<CellReference> stack;
@@ -67,7 +66,6 @@ double Table::evaluate_cell(const CellReference &t)
         while (!stack.empty())
         {
             CellReference current = stack.top();
-            std::cout << "From stack: " << current.get_x() << ", " << current.get_y() << std::endl;
             Cell &cur_cell = get_cell(current);
             std::vector<CellReference> dependencies = cur_cell.get_dependencies();
             bool ready = true;
@@ -177,11 +175,8 @@ CellReference coords_to_reference(const std::string &coords)
             c = coords[i];
     }
     if (i != coords.length()) throw InvalidCoordinatesException();
-    // TODO: DELETE THIS
-    std::cout << "X: " << m << ", Y: " << n << std::endl;
     ref.set_y(n);
     ref.set_x(m);
-    //std::cout << "X: " << ref.get_x() << ", Y: " << ref.get_y() << std::endl;
     return ref;
 }
 
@@ -206,8 +201,6 @@ PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std
         {
             // Trim all the spaces around
             trim(*it, ' ');
-
-            std::cout << *it << std::endl;
 
             if (it->length() == 0) continue;
 
@@ -284,7 +277,6 @@ PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std
                 // Number parsing failed
                 if (!(s >> d))
                 {
-                    std::cout << (*it) << std::endl;
                     throw InvalidInfixException();
                 }
                 expr.add_element(create_value(d));
@@ -331,8 +323,6 @@ PostfixElement create_reference(CellReference r, Table &parent_table)
     }
     else if (c.has_error())
     {
-        // TODO: DELETE THIS
-        std::cout << c.get_error() << std::endl;
         throw DependencyException();
     }
     else

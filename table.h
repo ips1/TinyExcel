@@ -96,7 +96,6 @@ public:
     // Constructor
     Table() : empty_cell("0", *this)
     {
-        std::cout << "In CTOR" << std::endl;
         empty_cell.evaluate();
     }
 
