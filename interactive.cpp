@@ -6,6 +6,7 @@
 #include "exceptions.h"
 #include "parsing.h"
 
+// Load command
 void InteractiveContext::load(const std::string &fname)
 {
     try
@@ -18,6 +19,7 @@ void InteractiveContext::load(const std::string &fname)
     }
 }
 
+// Save command
 void InteractiveContext::save(const std::string &fname)
 {
     try
@@ -30,6 +32,7 @@ void InteractiveContext::save(const std::string &fname)
     }
 }
 
+// Save value command
 void InteractiveContext::saveval(const std::string &fname)
 {
     try
@@ -42,15 +45,16 @@ void InteractiveContext::saveval(const std::string &fname)
     }
 }
 
-
+// Print command
 void InteractiveContext::print()
 {
     t.print(std::cout);
 }
 
+// Help command
 void InteractiveContext::help()
 {
-    std::cout << "TinyExcel Interactive Mode" << std::endl;
+    std::cout << app_name << " Interactive Mode" << std::endl;
     std::cout << "commands:" << std::endl;
     std::cout << "  load fname ... Loads table" << std::endl;
     std::cout << "  save fname ... Saves table" << std::endl;
@@ -60,6 +64,15 @@ void InteractiveContext::help()
     std::cout << "  get cell ... Evaluates cell and prints its value" << std::endl;
     std::cout << "  set cell content ... Sets cell content (resets previously computed values)" << std::endl;
     std::cout << "  help ... Shows this help" << std::endl;
+    std::cout << "  about ... About the application" << std::endl;
+}
+
+// About command
+void InteractiveContext::about()
+{
+    std::cout << app_name << " version " << app_version << std::endl;
+    std::cout << "© " << app_author << " " << app_year << std::endl;
+    std::cout << "Special thanks to Vit Sefl for his deep C++ knowledge and advices." << std::endl;
 }
 
 void InteractiveContext::eval()
@@ -88,6 +101,11 @@ void InteractiveContext::getc(const std::string &cell)
         std::cerr << "Invalid cell coordinates: " << cell << std::endl;
         return;
     }
+    catch (CoordinatesOverflowException &ex)
+    {
+        std::cerr << "Coordinates too large: " << cell << std::endl;
+        return;
+    }
     catch (EvaluationException &ex)
     {
         std::cerr << "Error while evaluating the cell!" << std::endl;
@@ -105,6 +123,11 @@ void InteractiveContext::setc(const std::string &cell, const std::string &conten
     catch (InvalidCoordinatesException &ex)
     {
         std::cerr << "Invalid cell coordinates: " << cell << std::endl;
+        return;
+    }
+    catch (CoordinatesOverflowException &ex)
+    {
+        std::cerr << "Coordinates too large: " << cell << std::endl;
         return;
     }
 }
@@ -198,6 +221,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
 void InteractiveContext::start_loop(std::istream &in)
 {
     std::string line;
+    std::cout << app_name << " " << app_version << " Interactive" << std::endl;
     while (!in.eof())
     {
         std::cout << "TinyExcel> ";

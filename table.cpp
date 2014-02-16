@@ -77,18 +77,6 @@ double Table::evaluate_cell(const CellReference &t)
                 if (next.is_on_stack())
                 {
                     next.put_on_cycle();
-                    // Stack unwinding
-                    /*
-                    CellReference last = stack.top();
-                    stack.pop();
-                    Cell &last_cell = get_cell(last);
-                    while ((last.get_x() != it->get_x()) && (last.get_y() != it ->get_y()))
-                    {
-                        last_cell.put_on_cycle();
-
-                        last = stack.top();
-                    }
-                    */
                 }
                 else if (next.is_dirty())
                 {
@@ -149,6 +137,7 @@ void Table::print(std::ostream &out)
 CellReference coords_to_reference(const std::string &coords)
 {
     CellReference ref;
+    bool overflow = false;
     char c = 0;
     int n = 0;
     int m = 0;
@@ -157,24 +146,27 @@ CellReference coords_to_reference(const std::string &coords)
     c = coords[i];
     while ((c >= 'A') && (c <= 'Z') && (i < coords.length()))
     {
-
+        int oldn = n;
         n *= letter_count;
         n += c - 'A' + 1;
+        if (n < oldn) overflow = true;
         i++;
         if (i < coords.length()) c = coords[i];
-
     }
     if (n == 0) throw InvalidCoordinatesException();
     if (i == coords.length()) throw InvalidCoordinatesException();
     while ((c >= '0') && (c <= '9') && (i < coords.length()))
     {
+        int oldm = m;
         m *= 10;
         m += c - '0';
+        if (m < oldm) overflow = true;
         i++;
         if (i < coords.length())
             c = coords[i];
     }
     if (i != coords.length()) throw InvalidCoordinatesException();
+    if (overflow) throw CoordinatesOverflowException();
     ref.set_y(n);
     ref.set_x(m);
     return ref;
@@ -264,6 +256,10 @@ PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std
                     ref = coords_to_reference(*it);
                 }
                 catch (InvalidCoordinatesException &ex)
+                {
+                    throw InvalidInfixException();
+                }
+                catch (CoordinatesOverflowException &ex)
                 {
                     throw InvalidInfixException();
                 }

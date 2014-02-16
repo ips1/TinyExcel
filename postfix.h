@@ -1,12 +1,13 @@
 #pragma once
 
 #include <vector>
-#include <iterator>
 #include <memory>
 
 #include "exceptions.h"
 #include "cell_reference.h"
 
+// Stack for postfix evaluation
+// - stores the numbers
 class PostfixStack
 {
 private:
@@ -31,12 +32,15 @@ public:
     }
 };
 
+// Abstract class for a part of postfix expression
 class PostfixAtom
 {
 public:
+    // Abstract method retrieving the value of the atom
     virtual void evaluate(PostfixStack&) = 0;
-    //virtual CellReference get_reference() = 0;
 };
+
+// -- Subclassees specifiing types of postfix atoms
 
 class Value: public PostfixAtom
 {
@@ -105,6 +109,8 @@ public:
     void evaluate(PostfixStack&);
 };
 
+// Class for holding entire postfix expression
+// - consists of PostfixAtoms unique pointers wrapped in PostfixElement
 class PostfixExpression
 {
 private:
@@ -119,6 +125,7 @@ public:
     double evaluate();
 };
 
+// Classes for creating specific expressions and elements
 PostfixExpression pure_value(double v);
 
 PostfixElement create_value(double v);

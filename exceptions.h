@@ -2,6 +2,8 @@
 
 #include <exception>
 
+// Exceptions used throughout the entire project
+
 class DivideByZeroException: public virtual std::exception
 {
 
@@ -18,6 +20,11 @@ class InvalidCellContentException: public virtual std::exception
 };
 
 class InvalidCoordinatesException: public virtual std::exception
+{
+
+};
+
+class CoordinatesOverflowException: public virtual std::exception
 {
 
 };

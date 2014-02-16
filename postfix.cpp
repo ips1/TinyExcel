@@ -1,4 +1,9 @@
 #include <iostream>
+#include <vector>
+#include <iterator>
+#include <memory>
+
+#include "exceptions.h"
 #include "postfix.h"
 
 void PostfixElement::evaluate(PostfixStack& current_stack)
