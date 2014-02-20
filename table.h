@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TABLE_H
+#define TABLE_H
+
 #include <iostream>
 #include <string>
 #include <stack>
@@ -22,8 +24,11 @@ const std::string CYCERR = "Cycle error";
 const std::string NUMERR = "Invalid number";
 const std::string EXPRERR = "Invalid expression";
 
+// Forward declaration of class table
 class Table;
 
+// Class for storing content of one cell
+// Because of PostfixExpression included cannot be copied!
 class Cell
 {
 private:
@@ -124,6 +129,7 @@ public:
     */
 };
 
+// Postfix extension which provides references (links) to cells
 class Reference: public PostfixAtom
 {
 private:
@@ -135,8 +141,12 @@ public:
     virtual void evaluate(PostfixStack&);
 };
 
+// Additional global functions for table and postfix handling
+
 CellReference coords_to_reference(const std::string &coords);
 
 PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std::vector<CellReference> &dependencies);
 
 PostfixElement create_reference(CellReference r, Table &parent_table);
+
+#endif // TABLE_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INTERACTIVE_H
+#define INTERACTIVE_H
 
 #include <string>
 #include <istream>
@@ -32,3 +33,5 @@ private:
 public:
     void start_loop(std::istream &in);
 };
+
+#endif // INTERACTIVE_H

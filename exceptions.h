@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EXCEPTIONS_H
+#define EXCEPTIONS_H
 
 #include <exception>
 
@@ -73,3 +74,5 @@ class NotEnoughArgumentsException: public virtual std::exception
 {
 
 };
+
+#endif // EXCEPTIONS_H

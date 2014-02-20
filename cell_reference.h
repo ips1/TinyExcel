@@ -1,5 +1,8 @@
-#pragma once
+#ifndef CELL_REFERENCE_H
+#define CELL_REFERENCE_H
 
+// Class representing a reference to a cell in a table
+// - contains valid positive coordinates
 class CellReference
 {
 private:
@@ -31,3 +34,5 @@ public:
         if (ny > 0) y = ny;
     }
 };
+
+#endif // CELL_REFERENCE_H

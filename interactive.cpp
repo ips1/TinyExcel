@@ -6,7 +6,7 @@
 #include "exceptions.h"
 #include "parsing.h"
 
-// Load command
+// Load command (loads table)
 void InteractiveContext::load(const std::string &fname)
 {
     try
@@ -19,7 +19,7 @@ void InteractiveContext::load(const std::string &fname)
     }
 }
 
-// Save command
+// Save command (saves table)
 void InteractiveContext::save(const std::string &fname)
 {
     try
@@ -32,7 +32,7 @@ void InteractiveContext::save(const std::string &fname)
     }
 }
 
-// Save value command
+// Save value command (saves table values)
 void InteractiveContext::saveval(const std::string &fname)
 {
     try
@@ -45,7 +45,7 @@ void InteractiveContext::saveval(const std::string &fname)
     }
 }
 
-// Print command
+// Print command (prints current state of entire table)
 void InteractiveContext::print()
 {
     t.print(std::cout);
@@ -54,7 +54,7 @@ void InteractiveContext::print()
 // Help command
 void InteractiveContext::help()
 {
-    std::cout << app_name << " Interactive Mode" << std::endl;
+    std::cout << std::endl << app_name << " Interactive Mode" << std::endl;
     std::cout << "commands:" << std::endl;
     std::cout << "  load fname ... Loads table" << std::endl;
     std::cout << "  save fname ... Saves table" << std::endl;
@@ -64,17 +64,18 @@ void InteractiveContext::help()
     std::cout << "  get cell ... Evaluates cell and prints its value" << std::endl;
     std::cout << "  set cell content ... Sets cell content (resets previously computed values)" << std::endl;
     std::cout << "  help ... Shows this help" << std::endl;
-    std::cout << "  about ... About the application" << std::endl;
+    std::cout << "  about ... About the application" << std::endl << std::endl;
 }
 
 // About command
 void InteractiveContext::about()
 {
-    std::cout << app_name << " version " << app_version << std::endl;
-    std::cout << "© " << app_author << " " << app_year << std::endl;
-    std::cout << "Special thanks to Vit Sefl for his deep C++ knowledge and advices." << std::endl;
+    std::cout << std::endl << app_name << " version " << app_version << std::endl;
+    std::cout << "(C) " << app_author << " " << app_year << std::endl;
+    std::cout << "Special thanks to Vit Sefl for his deep C++ knowledge and advices." << std::endl << std::endl;
 }
 
+// Eval command (evaluates entire table)
 void InteractiveContext::eval()
 {
     try
@@ -87,6 +88,7 @@ void InteractiveContext::eval()
     }
 }
 
+// Get command (evaluates cell and prints its value)
 void InteractiveContext::getc(const std::string &cell)
 {
     try
@@ -112,6 +114,7 @@ void InteractiveContext::getc(const std::string &cell)
     }
 }
 
+// Set command (sets a content of a cell)
 void InteractiveContext::setc(const std::string &cell, const std::string &content)
 {
     try
@@ -132,14 +135,20 @@ void InteractiveContext::setc(const std::string &cell, const std::string &conten
     }
 }
 
+// Takes a command, parses it and executes it
+// Returns true if the loop should end, false otherwise
 bool InteractiveContext::execute_command(const std::string &cmd)
 {
     const std::vector<char> delims = {' '};
     std::vector<std::string> parts;
+
+    // Split the command into parts
     parts = split_string(cmd, delims, true, false);
 
+    // Empty command, continue loop
     if (parts.size() == 1 && parts[0] == "") return false;
 
+    // Not empty command, switch by first word, check number of arguments
     if (parts[0] == "load")
     {
         if (parts.size() < 3)
@@ -149,7 +158,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
         load(parts[2]);
         return false;
     }
-    if (parts[0] == "save")
+    else if (parts[0] == "save")
     {
         if (parts.size() < 3)
         {
@@ -158,7 +167,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
         save(parts[2]);
         return false;
     }
-    if (parts[0] == "saveval")
+    else if (parts[0] == "saveval")
     {
         if (parts.size() < 3)
         {
@@ -167,7 +176,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
         saveval(parts[2]);
         return false;
     }
-    if (parts[0] == "get")
+    else if (parts[0] == "get")
     {
         if (parts.size() < 3)
         {
@@ -176,7 +185,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
         getc(parts[2]);
         return false;
     }
-    if (parts[0] == "set")
+    else if (parts[0] == "set")
     {
         if (parts.size() < 5)
         {
@@ -204,8 +213,14 @@ bool InteractiveContext::execute_command(const std::string &cmd)
         help();
         return false;
     }
+    else if (parts[0] == "about")
+    {
+        about();
+        return false;
+    }
     else if (parts[0] == "exit")
     {
+        // Loop should end, returns true
         return true;
     }
     else
@@ -221,7 +236,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
 void InteractiveContext::start_loop(std::istream &in)
 {
     std::string line;
-    std::cout << app_name << " " << app_version << " Interactive" << std::endl;
+    std::cout << app_name << " " << app_version << " Interactive" << std::endl << std::endl;
     while (!in.eof())
     {
         std::cout << "TinyExcel> ";

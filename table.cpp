@@ -1,9 +1,11 @@
 #include <string>
 #include <map>
+#include <vector>
 #include <sstream>
 
 #include "table.h"
 
+// Sets the text content of a cell (replaces the old one with new one)
 void Table::set_cell(const CellReference &t, const std::string &content)
 {
     auto res = data[t.get_x()].insert(std::pair<int, Cell>(t.get_y(), Cell(content, *this)));
@@ -13,6 +15,8 @@ void Table::set_cell(const CellReference &t, const std::string &content)
     }
 }
 
+// Returns reference to specified cell
+// - if the cell does not exist, returns reference to empty cell
 Cell &Table::get_cell(const CellReference &t)
 {
     try
@@ -114,13 +118,21 @@ void Table::print(std::ostream &out)
         {
             Cell &cell = itb->second;
             l = itb->first;
+            // Conversion of coordinates back to string format
             int letter_count = 'Z' - 'A' + 1;
-            std::stringstream ss;
+            std::vector<char> buffer;
             while (l > 0)
             {
-                char c = 'A' + (l % letter_count) - 1;
-                l = l / letter_count;
-                ss << c;
+                int mod = ((l-1) % letter_count);
+                char c = 'A' + mod;
+                l = (l - mod) / letter_count;
+                buffer.push_back(c);
+            }
+            std::stringstream ss;
+            // Reversing character order
+            for (auto it = buffer.rbegin(); it != buffer.rend(); it++)
+            {
+                ss << (*it);
             }
             ss << k;
 
@@ -144,6 +156,7 @@ CellReference coords_to_reference(const std::string &coords)
     const int letter_count = 'Z' - 'A' + 1;
     unsigned i = 0;
     c = coords[i];
+    // Rows
     while ((c >= 'A') && (c <= 'Z') && (i < coords.length()))
     {
         int oldn = n;
@@ -155,6 +168,7 @@ CellReference coords_to_reference(const std::string &coords)
     }
     if (n == 0) throw InvalidCoordinatesException();
     if (i == coords.length()) throw InvalidCoordinatesException();
+    // Columns
     while ((c >= '0') && (c <= '9') && (i < coords.length()))
     {
         int oldm = m;
@@ -300,7 +314,7 @@ PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std
     return std::move(expr);
 }
 
-
+// Creates PostfixElement Reference for specified cell
 PostfixElement create_reference(CellReference r, Table &parent_table)
 {
     return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Reference(r, parent_table))));
@@ -308,6 +322,7 @@ PostfixElement create_reference(CellReference r, Table &parent_table)
 
 // -- Reference : PostfixElement --
 // Overriding evaluate method
+// Evaluation of reference inside the postfix expression - just fetches the value and puts it on stack
  void Reference::evaluate(PostfixStack& current_stack)
 {
     double val;

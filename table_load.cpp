@@ -38,7 +38,6 @@ void Table::load(std::string fname)
             trim(*it, ' ');
             // Dont put empty cells
             if (*it == "") continue;
-            std::cout << "PART " << k << ", " << l <<": " << *it << std::endl;
             set_cell(CellReference(k, l), *it);
         }
     }

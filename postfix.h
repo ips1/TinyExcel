@@ -1,4 +1,5 @@
-#pragma once
+#ifndef POSTFIX_H
+#define POSTFIX_H
 
 #include <vector>
 #include <memory>
@@ -131,3 +132,6 @@ PostfixExpression pure_value(double v);
 PostfixElement create_value(double v);
 
 PostfixElement create_operator(char c);
+
+
+#endif // POSTFIX_H

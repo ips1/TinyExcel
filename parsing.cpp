@@ -1,4 +1,5 @@
 #include <vector>
+#include <memory>
 #include <string>
 #include <sstream>
 
@@ -6,11 +7,13 @@
 
 // Splits the string using specified delimiters
 // if include_delims is true, delimiters are also included as strings
+// if keep_empty is true, empty strings are also included
 std::vector<std::string> split_string(const std::string &str, const std::vector<char> &delims, bool include_delims, bool keep_empty)
 {
     std::vector<std::string> result;
     std::string tmp = str;
 
+    // Minimal position of all occurences (of all delimiters)
     unsigned minpos = tmp.length();
     for (auto it = delims.begin(); it < delims.end(); it++)
     {
