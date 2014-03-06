@@ -289,6 +289,10 @@ PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std
                 {
                     throw InvalidInfixException();
                 }
+				if (s.rdbuf()->in_avail() != 0)
+				{
+					throw InvalidInfixException();
+				}
                 expr.add_element(create_value(d));
             }
         }
@@ -317,7 +321,7 @@ PostfixExpression parse_infix(const std::string &infix, Table &parent_table, std
 // Creates PostfixElement Reference for specified cell
 PostfixElement create_reference(CellReference r, Table &parent_table)
 {
-    return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Reference(r, parent_table))));
+	return PostfixElement(std::make_shared<Reference>(r, parent_table));
 }
 
 // -- Reference : PostfixElement --

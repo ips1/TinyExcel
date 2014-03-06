@@ -23,8 +23,12 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
     {
         std::stringstream s(text);
         double d;
+		bool failed = false;
         // Number parsing failed
-        if (!(s >> d))
+		if (!(s >> d)) failed = true;
+		if (s.rdbuf()->in_avail() != 0) failed = true;
+
+		if (failed)
         {
             error_message = NUMERR;
             dirty = false;
@@ -33,6 +37,7 @@ Cell::Cell(const std::string &text, Table &parent_table): original_text(text)
             expr = pure_value(0);
             return;
         }
+
         error = false;
         expr = pure_value(d);
         return;

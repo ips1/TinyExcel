@@ -17,7 +17,7 @@ class InteractiveContext
 {
 private:
     Table t;
-    bool execute_command(const std::string &cmd);
+    bool execute_command(std::string &cmd);
 
     // Methods for commands:
     void load(const std::string &fname);

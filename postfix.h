@@ -103,10 +103,10 @@ public:
 class PostfixElement
 {
 private:
-    std::unique_ptr<PostfixAtom> atom;
+    std::shared_ptr<PostfixAtom> atom;
 
 public:
-    PostfixElement(std::unique_ptr<PostfixAtom> item): atom(std::move(item)) {}
+	PostfixElement(std::shared_ptr<PostfixAtom> item) : atom(item) {}
     void evaluate(PostfixStack&);
 };
 

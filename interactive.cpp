@@ -137,8 +137,14 @@ void InteractiveContext::setc(const std::string &cell, const std::string &conten
 
 // Takes a command, parses it and executes it
 // Returns true if the loop should end, false otherwise
-bool InteractiveContext::execute_command(const std::string &cmd)
+bool InteractiveContext::execute_command(std::string &cmd)
 {
+	// Delete spaces from both sides
+	trim(cmd, ' ');
+
+	// Commentary, continue loop
+	if ((cmd.size() >= 2) && (cmd[0] == '/') && (cmd[1] == '/')) return false;
+
     const std::vector<char> delims = {' '};
     std::vector<std::string> parts;
 
@@ -151,7 +157,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
     // Not empty command, switch by first word, check number of arguments
     if (parts[0] == "load")
     {
-        if (parts.size() < 3)
+        if (parts.size() != 3)
         {
             throw NotEnoughArgumentsException();
         }
@@ -160,7 +166,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
     }
     else if (parts[0] == "save")
     {
-        if (parts.size() < 3)
+        if (parts.size() != 3)
         {
             throw NotEnoughArgumentsException();
         }
@@ -169,7 +175,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
     }
     else if (parts[0] == "saveval")
     {
-        if (parts.size() < 3)
+        if (parts.size() != 3)
         {
             throw NotEnoughArgumentsException();
         }
@@ -178,7 +184,7 @@ bool InteractiveContext::execute_command(const std::string &cmd)
     }
     else if (parts[0] == "get")
     {
-        if (parts.size() < 3)
+        if (parts.size() != 3)
         {
             throw NotEnoughArgumentsException();
         }
@@ -187,10 +193,6 @@ bool InteractiveContext::execute_command(const std::string &cmd)
     }
     else if (parts[0] == "set")
     {
-        if (parts.size() < 5)
-        {
-            throw NotEnoughArgumentsException();
-        }
         std::string coords = parts[2];
         parts.erase(parts.begin(), parts.begin() + 4);
         std::string content = merge_string(parts, "");
@@ -200,26 +202,46 @@ bool InteractiveContext::execute_command(const std::string &cmd)
     }
     else if (parts[0] == "print")
     {
+		if (parts.size() != 1)
+		{
+			throw NotEnoughArgumentsException();
+		}
         print();
         return false;
     }
     else if (parts[0] == "eval")
     {
+		if (parts.size() != 1)
+		{
+			throw NotEnoughArgumentsException();
+		}
         eval();
         return false;
     }
     else if (parts[0] == "help")
     {
+		if (parts.size() != 1)
+		{
+			throw NotEnoughArgumentsException();
+		}
         help();
         return false;
     }
     else if (parts[0] == "about")
     {
+		if (parts.size() != 1)
+		{
+			throw NotEnoughArgumentsException();
+		}
         about();
         return false;
     }
     else if (parts[0] == "exit")
     {
+		if (parts.size() != 1)
+		{
+			throw NotEnoughArgumentsException();
+		}
         // Loop should end, returns true
         return true;
     }
@@ -251,7 +273,7 @@ void InteractiveContext::start_loop(std::istream &in)
         }
         catch (NotEnoughArgumentsException &ex)
         {
-            std::cerr << "Not enough arguments for a command: " << line << std::endl;
+            std::cerr << "Wrong arguments for a command: " << line << std::endl;
         }
     }
 }

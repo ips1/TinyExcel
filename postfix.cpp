@@ -77,24 +77,24 @@ double PostfixExpression::evaluate()
 PostfixExpression pure_value(double v)
 {
     PostfixExpression expr;
-    expr.add_element(PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Value(v)))));
+    expr.add_element(PostfixElement(std::make_shared<Value>(v)));
     return std::move(expr);
 }
 
 PostfixElement create_value(double v)
 {
-    return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Value(v))));
+	return PostfixElement(std::make_shared<Value>(v));
 }
 
 PostfixElement create_operator(char c)
 {
     switch (c)
     {
-        case '+': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Addition)));
-        case '-': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Subtraction)));
-        case '*': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Multiplication)));
-        case '/': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Division)));
-        case '~': return PostfixElement(std::move(std::unique_ptr<PostfixAtom>(new Negation)));
+		case '+': return PostfixElement(std::make_shared<Addition>());
+		case '-': return PostfixElement(std::make_shared<Subtraction>());
+		case '*': return PostfixElement(std::make_shared<Multiplication>());
+		case '/': return PostfixElement(std::make_shared<Division>());
+		case '~': return PostfixElement(std::make_shared<Negation>());
 
         default: throw InvalidOperatorException();
     }
